@@ -1,0 +1,208 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width" />
+    <title>企业信息化平台管理系统</title>
+    @*添加Jquery EasyUI的样式*@
+    <link href="~/Content/JqueryEasyUI/themes/default/easyui.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/JqueryEasyUI/themes/icon.css" rel="stylesheet" type="text/css" />
+
+    <link href="~/Content/themes/Default/style.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/themes/Default/default.css" rel="stylesheet" type="text/css" />
+
+    @*添加Jquery，EasyUI和easyUI的语言包的JS文件*@
+    <script type="text/javascript" src="~/Content/JqueryEasyUI/jquery.min.js"></script>
+    <script type="text/javascript" src="~/Content/JqueryEasyUI/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="~/Content/JqueryEasyUI/locale/easyui-lang-zh_CN.js"></script>
+
+    @*日期格式的引用*@
+    <script src="~/Content/datapattern.js"></script>
+    @*引用Jquery文件的JS脚本*@
+    <script src="~/Scripts/jquery-2.0.3.js"></script>
+    <script type="text/javascript">
+        //判断显示用户登录的时候显示整个页面
+        if (window.parent.window != window) {
+            window.top.location.href = "/Home/Index";
+        }
+
+        //当用户刷新页面触发的方法
+        $(function () {
+            //实现用户登录的方法
+            LoginUserInfo();
+            //单击的时候修改验证码的方法
+            //ClickRemoveChangeCode();
+        });
+
+        //实现用户登录
+        function LoginUserInfo() {
+            //获取单击用户登录按钮的事件
+            $("#btnLogin").click(function () {
+                //首先获取到要传递到控制器的参数，并且狗造成Json。UserName，UserPassword，Code
+                var postData = {
+                    UserName: $("#UserName").val(),
+                    Password: $("#Password").val(),
+                    Code: $("#Code").val()
+                };
+
+                //发送异步请求实现登录 ajax
+                $.ajax({
+                    url: '/Login/CheckUser',
+                    data: postData,
+                    cache: false,
+                    async: true,
+                    type: 'post',
+                    success: function (data) {
+                        if (data == "OK") {
+                            window.location.href = "/Home/Index";
+
+                        } else {
+                            alert(data);
+                            window.location.href = "/Login/Index";
+                        }
+                    }
+                });
+            });
+        }
+
+        //单击重新改变验证码
+        function ClickRemoveChangeCode() {
+            //获取到验证码的路径
+            var code = $("#imgCode").attr("src");
+            //然后重新给验证码的路径赋值
+            $("#imgCode").attr("src", code + "1");
+        }
+    </script>
+    <style type="text/css">
+        .style1 {
+            height: 5px;
+        }
+
+        .style3 {
+            height: 6px;
+        }
+
+        .style4 {
+            height: 43px;
+        }
+
+        .style5 {
+            height: 18px;
+        }
+    </style>
+    <script language="javascript">
+        //表单重置
+        function doReset() {
+            document.form1.reset();
+            return false;
+        }
+    </script>
+</head>
+<body>
+    <br />
+    <br />
+    <form id="form1">
+    <table height="413" cellspacing="0" cellpadding="0" width="612" align="center" border="0">
+        <tbody>
+            <tr>
+                <td valign="top" width="600" background="~/Content/Themes/Default/login_content2.png" height="412">
+                    <div align="center">
+                        <table width="100%" height="392" border="0" cellpadding="0" cellspacing="0">
+                            <tbody>
+                                <tr>
+                                    <td colspan="2" height="181">
+                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                            <tr>
+                                                <td>&nbsp;
+                                                    
+                                                </td>
+                                                <td>&nbsp;
+                                                    
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>&nbsp;
+                                                    
+                                                </td>
+                                                <td>
+                                                    <div align="right" style="margin-right: 20px;">
+                                                        <p>&nbsp;</p>
+                                                        <p>&nbsp;</p>
+                                                        <p>
+                                                            <strong><font color="#990000">
+                                                                <br>版本号: 2013版</font>&nbsp;&nbsp;
+                                                                <font color='yellow'>( MVC4 + EasyUI + Ajax + Enterprise Library)</font></strong>&nbsp;&nbsp;
+                                                        </p>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" align="center" height="30">&nbsp;
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="38%" height="180">
+                                        <br>
+                                        <br>
+                                        <br>
+                                        <div align="center"></div>
+                                    </td>
+                                    <td width="62%">
+                                        <table cellspacing="0" cellpadding="0" width="100%" border="0">
+                                            <tbody>
+                                                <tr>
+                                                    <td>&nbsp;</td>
+                                                    <td width="4" class="ssa">&nbsp;</td>
+                                                    <td width="264" height="35" align="left">
+                                                        <input type="text" id="UserName" style="width: 165px; height: 21px" value="admin"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="style1"></td>
+                                                    <td width="4" class="style1"></td>
+                                                    <td width="264" class="style1"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="style4"></td>
+                                                    <td width="4" class="style4">&nbsp;
+                                                        
+                                                    </td>
+                                                    <td width="264" align="left" class="style4">
+                                                        <input type="password" id="Password" style="width: 165px; height: 21px"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="style3"></td>
+                                                    <td class="style3"></td>
+                                                    <td valign="bottom" class="style3"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="3" align="center" class="style5">
+                                                        <img src="~/Content/Themes/Default/btn_login2.png" id="btnLogin" style="height:30px; width:65px; margin-right:40px; margin-left:15px;cursor:pointer"/>
+                                                        <img src="~/Content/Themes/Default/btn_reset2.png" width="65" height="30" border="0" style="cursor: pointer"  onclick='doReset()'>
+                                                    </td>
+                                                </tr>
+                                                    <td colspan="3" height="40px">&nbsp;</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    </form>
+</body>
+</html>
+

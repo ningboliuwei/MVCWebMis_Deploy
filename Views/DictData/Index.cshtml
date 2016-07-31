@@ -1,0 +1,381 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width" />
+    <title>字典明细项目信息</title>
+    @*添加Jquery EasyUI的样式*@
+    <link href="~/Content/JqueryEasyUI/themes/default/easyui.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/JqueryEasyUI/themes/icon.css" rel="stylesheet" type="text/css" />
+
+    <link href="~/Content/themes/Default/style.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/themes/Default/default.css" rel="stylesheet" type="text/css" />
+
+    @*添加Jquery，EasyUI和easyUI的语言包的JS文件*@
+    <script type="text/javascript" src="~/Content/JqueryEasyUI/jquery.min.js"></script>
+    <script type="text/javascript" src="~/Content/JqueryEasyUI/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="~/Content/JqueryEasyUI/locale/easyui-lang-zh_CN.js"></script>
+
+    @*日期格式的引用*@
+    <script src="~/Content/datapattern.js"></script>
+    <link href="~/Content/JQueryTools/JQueryTree/css/zTreeStyle/zTreeStyle.css" rel="stylesheet" type="text/css" />
+    <script src="~/Content/JQueryTools/JQueryTree/js/jquery.ztree.core-3.5.min.js" type="text/javascript"></script>
+    <script src="~/ViewScript/dictdata.js"></script>
+    <style>
+        table.view {border:1px solid #A8CFEB;border-collapse: collapse;margin-bottom:5px;}
+        .view th{ padding-left:10px;padding-right:5px;padding-top:5px;padding-bottom:5px;height:23px;width: 150px;border: 1px solid silver;background-color:#F1F6FF;}
+        .view td{ padding-left:10px;padding-right:5px;padding-top:5px;padding-bottom:5px;height:23px;width: 150px;border: 1px solid silver;background-color:#FAFCFF;}
+    </style>
+    </head>
+<body>
+    <div id="loading" style="display: none;"><img alt="数据正在加载中..." src="~/Content/images/loading02.gif" /></div>
+    <div class="easyui-layout" style="width:700px;height:700px;" fit="true">
+        <div data-options="region:'west',split:true,title:'字典类别',iconCls:'icon-book'" style="width: 300px; padding: 1px;">
+            <div style="padding: 1px; border: 1px solid #ddd;">                
+                <a href="#" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-add'" id="A1" onclick="ShowDictType('add');">添加</a>
+                <a href="#" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-edit'" id="A2" onclick="ShowDictType('edit');">修改</a>
+                <a href="#" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-remove'" id="A3" onclick="deleteTypeData()">删除</a>
+                <a href="#" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-reload'" id="A4" onclick="reloadTree()">刷新</a>
+@*                <a id="expandAllBtn" href="#" title="展开所有" onclick="return false;">展开</a>
+                <a id="collapseAllBtn" href="#" title="关闭所有" onclick="return false;">折叠</a>*@
+            </div>
+            <div>
+                <ul id="treeDemo" class="ztree">
+                </ul>
+            </div>
+        </div>
+        <div id="tb" data-options="region:'center',title:'字典数据',iconCls:'icon-book'" style="padding:5px;height:auto">                
+            <!-------------------------------详细信息展示表格----------------------------------->
+            <table id="grid" style="width: 940px" title="用户操作" iconcls="icon-view">
+            
+            </table>
+        </div>
+    </div>
+   
+    <!--------------------------添加字典大类信息的弹出层---------------------------->
+    <div id="DivAddType" class="easyui-dialog" style="width:380px;height:300px;padding:10px 20px"
+			closed="true" resizable="true" modal="true" data-options="iconCls: 'icon-add',buttons: '#dlg-buttons'">
+        <form id="ffAddType" method="post" novalidate="novalidate">
+                <table id="tblAddType"  class="view">
+                    <tr>
+                        <th>
+                            <label for="type_Name">类型名称：</label>
+                        </th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="type_Name" name="Name" data-options="required:true,validType:'length[1,250]'" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <label for="type_PID">父节点：</label>
+                        </th>
+                        <td>
+                            <input class="easyui-combobox" type="text" id="type_PID" name="PID" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <label for="type_Seq">排序：</label>
+                        </th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="type_Seq" name="Seq" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <label for="type_Remark">备注：</label>
+                        </th>
+                        <td>
+                           <textarea style="height:60px;width:200px" id="type_Remark" name="Remark"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" style="text-align:right; padding-top:10px">
+                            <a href="javascript:void(0)" class="easyui-linkbutton" id="btnAddOKType" iconcls="icon-ok" >确定</a>
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#DivAddType').dialog('close')">关闭</a>
+                        </td>
+                    </tr>
+                </table>
+        </form>
+    </div>
+
+    <!--------------------------编辑字典大类信息的弹出层---------------------------->
+    <div id="DivEditType" class="easyui-dialog" style="width:380px;height:300px;padding:10px 20px"
+			closed="true" resizable="true" modal="true" data-options="iconCls: 'icon-edit',buttons: '#dlg-buttons'">
+        <form id="ffEditType" method="post" novalidate="novalidate">
+                <table id="tblEditType"  class="view">
+                    <tr>
+                        <th>
+                            <label for="type_Name1">类型名称：</label>
+                        </th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="type_Name1" name="Name" data-options="required:true,validType:'length[1,250]'" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <label for="type_PID1">父节点：</label>
+                        </th>
+                        <td>
+                            <input class="easyui-combobox" type="text" id="type_PID1" name="PID" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <label for="type_Seq1">排序：</label>
+                        </th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="type_Seq1" name="Seq" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <label for="type_Remark1">备注：</label>
+                        </th>
+                        <td>
+                            <textarea style="height:60px;width:200px" id="type_Remark1" name="Remark"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" style="text-align:right; padding-top:10px">
+                            <input type="hidden" id="type_ID1" name="ID" />
+                            <a href="javascript:void(0)" class="easyui-linkbutton" id="btnEditOKType" iconcls="icon-ok" >确定</a>
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#DivEditType').dialog('close')">关闭</a>
+                        </td>
+                    </tr>
+                </table>
+        </form>
+    </div>
+
+    <!--------------------------批量添加字典信息的弹出层---------------------------->
+    <div id="DivBatchAdd" class="easyui-dialog" style="width:680px;height:570px;padding:10px 20px"
+			closed="true" resizable="true" modal="true" data-options="iconCls: 'icon-batch-add',buttons: '#dlg-buttons'">
+        <form id="ffBatchAdd" method="post" novalidate="novalidate">
+                <table id="tblAddBatch" class="view" style="width:98%">
+                    <tr>
+                        <th>
+                            <label for="Batch_DictType_ID">字典大类：</label>
+                        </th>
+                        <td>
+                            <input class="easyui-combobox" type="text" id="Batch_DictType_ID" name="DictType_ID" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <label for="Batch_Seq">排序：</label>
+                        </th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="Batch_Seq" name="Seq" value="001" />(数值开始或者字符作为前缀)
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <label>字典数据：</label>
+                        </th>
+                        <td>
+                            <textarea style="height:260px;width:500px" id="Batch_Data" name="Data" data-options="required:true" ></textarea>
+                        </td>
+                   </tr>
+                    <tr>
+                        <th>
+                            <label>数据分开方式：</label>
+                        </th>
+                        <td>
+                            <input name="SplitType" type="radio" class="easyui-validatebox" checked="checked" required="true" value="Split">分隔符方式，多个数据中英文逗号，分号，斜杠或顿号[, ， ; ； / 、]分开，或一行一个　
+                            <br />
+                            <input name="SplitType" type="radio" class="easyui-validatebox" required="true" value="Line">一行一个记录模式，忽略所有分隔符号
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <label for="Batch_Remark">备注信息：</label>
+                        </th>
+                        <td>
+                            <textarea style="height:40px;width:500px" id="Batch_Remark" name="Remark" ></textarea> <!-- data-options="required:true,validType:'length[1,50]'" -->
+                        </td>
+                    </tr> 
+                    <tr>
+                        <td colspan="2" style="text-align:right; padding-top:10px">
+                            <a href="javascript:void(0)" class="easyui-linkbutton" id="btnBatchAddOK" iconcls="icon-ok" >确定</a>
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#DivBatchAdd').dialog('close')">关闭</a>
+                        </td>
+                    </tr>
+                </table>
+        </form>
+    </div>
+
+    <!--------------------------添加字典信息的弹出层---------------------------->
+    <div id="DivAdd" class="easyui-dialog" style="width:580px;height:270px;padding:10px 20px"
+			closed="true" resizable="true" modal="true" data-options="iconCls: 'icon-add',buttons: '#dlg-buttons'">
+        <form id="ffAdd" method="post" novalidate="novalidate">
+                <table id="tblAdd"  class="view">
+                    <tr>                        
+                        <th>
+                            <label for="DictType_ID">字典大类：</label>
+                        </th>
+                        <td>
+                            <input class="easyui-combobox" type="text" id="DictType_ID" name="DictType_ID" /> <!-- data-options="required:true,validType:'length[1,50]'" -->
+                        </td>
+                        <th>
+                            <label for="Seq">排序：</label>
+                        </th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="Seq" name="Seq" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <label for="Name">字典名称：</label>
+                        </th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="Name" name="Name" /> <!-- data-options="required:true,validType:'length[1,50]'" -->
+                        </td>
+                        <th>
+                            <label for="Value">字典值：</label>
+                        </th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="Value" name="Value" /> <!-- data-options="required:true,validType:'length[1,50]'" -->
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <label for="Remark">备注信息：</label>
+                        </th>
+                        <td colspan="3">
+                            <textarea style="height:60px;width:300px" id="Remark" name="Remark"></textarea>
+                        </td>                        
+                    </tr>
+                    <tr>
+                        <td colspan="4" style="text-align:right; padding-top:10px">
+                            <a href="javascript:void(0)" class="easyui-linkbutton" id="btnAddOK" iconcls="icon-ok" >确定</a>
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#DivAdd').dialog('close')">关闭</a>
+                        </td>
+                    </tr>
+                </table>
+        </form>
+    </div>
+
+    <!--------------------------编辑字典信息的弹出层---------------------------->
+    <div id="DivEdit" class="easyui-dialog" style="width:580px;height:270px;padding:10px 20px"
+			closed="true" resizable="true" modal="true" data-options="iconCls: 'icon-edit',buttons: '#dlg-buttons'">
+        <form id="ffEdit" method="post" novalidate="novalidate">
+                <table id="tblEdit" class="view">
+                    <tr>
+                        <th>
+                            <label for="DictType_ID1">字典大类：</label>
+                        </th>
+                        <td>
+                            <input class="easyui-combobox" type="text" id="DictType_ID1" name="DictType_ID" />
+                        </td>
+                        <th>
+                            <label for="Seq1">排序：</label>
+                        </th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="Seq1" name="Seq" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <label for="Name1">字典名称：</label>
+                        </th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="Name1" name="Name" />
+                            <!--data-options="required:true,validType:'length[1,50]'"-->
+                        </td>
+                        <th>
+                            <label for="Value1">字典值：</label>
+                        </th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="Value1" name="Value" />
+                            <!--data-options="required:true,validType:'length[1,50]'"-->
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <label for="Remark1">备注信息：</label>
+                        </th>
+                        <td colspan="3">
+                            <textarea style="height: 60px; width: 300px" id="Remark1" name="Remark"></textarea>
+                        </td>
+                    </tr> 
+                    <tr>
+                        <td colspan="4" style="text-align:right; padding-top:10px">
+                            <input type="hidden" id="ID1" name="ID" />
+                            <a href="javascript:void(0)" class="easyui-linkbutton" id="btnEditOK" iconcls="icon-ok" >确定</a>
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#DivEdit').dialog('close')">关闭</a>
+                        </td>
+                    </tr>
+                </table>
+        </form>
+    </div>
+
+    <!--------------------------查看字典详细信息的弹出层---------------------------->
+    <div id="DivView" class="easyui-dialog" style="width:580px;height:250px;padding:10px 20px"
+			closed="true" resizable="true" modal="true" data-options="iconCls: 'icon-view',buttons: '#dlg-buttons'">
+        <form id="ffView" method="post" novalidate="novalidate">
+            <table id="tblView" class="view">
+                <tr>
+                    <th>
+                        <label for="DictType_ID2">字典大类：</label>
+                    </th>
+                    <td>
+                        <label id="DictType_ID2" />
+                    </td>
+                    <th>
+                        <label for="Seq2">排序：</label>
+                    </th>
+                    <td>
+                        <label id="Seq2" />
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        <label for="Name2">字典名称：</label>
+                    </th>
+                    <td>
+                        <label id="Name2" />
+                    </td>
+                    <th>
+                        <label for="Value2">字典值：</label>
+                    </th>
+                    <td>
+                        <label id="Value2" />
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        <label for="Remark2">备注信息：</label>
+                    </th>
+                    <td colspan="3">
+                        <label id="Remark2" />
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        <label for="Editor2">编辑者：</label>
+                    </th>
+                    <td>
+                        <label id="Editor2" />
+                    </td>
+                    <th>
+                        <label for="LastUpdated2">编辑时间：</label>
+                    </th>
+                    <td>
+                        <label id="LastUpdated2" />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4" style="text-align: right; padding-top: 10px">
+                        <input type="hidden" id="ID2" />
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#DivView').dialog('close')">关闭</a>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</body>
+</html>

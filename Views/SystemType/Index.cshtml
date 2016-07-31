@@ -1,0 +1,235 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width" />
+    <title>系统类型定义</title>
+    @*添加Jquery EasyUI的样式*@
+    <link href="~/Content/JqueryEasyUI/themes/default/easyui.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/JqueryEasyUI/themes/icon.css" rel="stylesheet" type="text/css" />
+
+    <link href="~/Content/themes/Default/style.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/themes/Default/default.css" rel="stylesheet" type="text/css" />
+
+    @*添加Jquery，EasyUI和easyUI的语言包的JS文件*@
+    <script type="text/javascript" src="~/Content/JqueryEasyUI/jquery.min.js"></script>
+    <script type="text/javascript" src="~/Content/JqueryEasyUI/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="~/Content/JqueryEasyUI/locale/easyui-lang-zh_CN.js"></script>
+
+    @*日期格式的引用*@
+    <script src="~/Content/datapattern.js"></script>
+        <script src="~/ViewScript/SystemType.js"></script>
+
+
+    <style>
+        table.view {border:1px solid #A8CFEB;border-collapse: collapse;margin-bottom:5px;}
+        .view th{ padding-left:10px;padding-right:5px;padding-top:5px;padding-bottom:5px;height:23px;width: 150px;border: 1px solid silver;background-color:#F1F6FF;}
+        .view td{ padding-left:10px;padding-right:5px;padding-top:5px;padding-bottom:5px;height:23px;width: 150px;border: 1px solid silver;background-color:#FAFCFF;}
+    </style>
+    </head>
+<body>
+    <div id="loading" style="display: none;"><img alt="数据正在加载中..." src="~/Content/images/loading02.gif" /></div>
+    <div class="easyui-layout" id="tb" style="padding:5px;height:auto">
+        <!-------------------------------搜索框----------------------------------->
+        <fieldset>
+            <legend>信息查询</legend>
+            <form id="ffSearch" method="post">
+		        <div style="margin-bottom:5px">
+		        
+                    <label for="txtOid">系统标识：</label>
+                    <input type="text" ID="txtOid" name="txtOid" style="width:100px"  />&nbsp;&nbsp;&nbsp;
+                    <label for="txtName">系统名称：</label>
+                    <input type="text" ID="txtName" name="txtName" style="width:100px"  />&nbsp;&nbsp;&nbsp;
+                    <label for="txtCustomID">客户编码：</label>
+                    <input type="text" ID="txtCustomID" name="txtCustomID" style="width:100px"  />&nbsp;&nbsp;&nbsp;
+                    <label for="txtAuthorize">授权编码：</label>
+                    <input type="text" ID="txtAuthorize" name="txtAuthorize" style="width:100px"  />&nbsp;&nbsp;&nbsp;
+                    <label for="txtNote">备注：</label>
+                    <input type="text" ID="txtNote" name="txtNote" style="width:100px"  />&nbsp;&nbsp;&nbsp;
+                     <a href="#" class="easyui-linkbutton" iconcls="icon-search" id="btnSearch">查询</a>
+                </div>
+
+            </form>
+        </fieldset>
+                
+        <!-------------------------------详细信息展示表格----------------------------------->
+        <table id="grid" style="width: 940px" title="用户操作" iconcls="icon-view" >
+            
+        </table>
+    </div>
+
+    <!--------------------------添加信息的弹出层---------------------------->
+    <div id="DivAdd" class="easyui-dialog" style="width:580px;height:220px;padding:10px 20px"
+			closed="true" resizable="true" modal="true" data-options="iconCls: 'icon-add',buttons: '#dlg-buttons'">
+        <form id="ffAdd" method="post" novalidate="novalidate">
+                <table id="tblAdd" class="view">
+                    <tr>
+                        <th>
+                            <label for="Oid">系统标识：</label>
+                        </th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="Oid" name="Oid" data-options="required:true,validType:'length[1,50]'"/> 
+                        </td>
+
+                        <th>
+                            <label for="Name">系统名称：</label>
+                        </th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="Name" name="Name" data-options="required:true,validType:'length[1,50]'"/> 
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <th>
+                            <label for="CustomID">客户编码：</label>
+                        </th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="CustomID" name="CustomID" /> <!--//data-options="required:true,validType:'length[1,50]'"-->
+                        </td>
+
+                        <th>
+                            <label for="Authorize">授权编码：</label>
+                        </th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="Authorize" name="Authorize" /> <!--//data-options="required:true,validType:'length[1,50]'"-->
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <th>
+                            <label for="Note">备注：</label>
+                        </th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="Note" name="Note" /> <!--//data-options="required:true,validType:'length[1,50]'"-->
+                        </td>
+
+                    </tr>
+ 
+                    <tr>
+                        <td colspan="4" style="text-align:right; padding-top:10px">
+                            <a href="javascript:void(0)" class="easyui-linkbutton" id="btnAddOK" iconcls="icon-ok" >确定</a>
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#DivAdd').dialog('close')">关闭</a>
+                        </td>
+                    </tr>
+                </table>
+        </form>
+    </div>
+
+    <!--------------------------编辑信息的弹出层---------------------------->
+    <div id="DivEdit" class="easyui-dialog" style="width:580px;height:220px;padding:10px 20px"
+			closed="true" resizable="true" modal="true" data-options="iconCls: 'icon-edit',buttons: '#dlg-buttons'">
+        <form id="ffEdit" method="post" novalidate="novalidate">
+                <table id="tblEdit" class="view">
+                    <tr>
+
+                        <th>
+                            <label for="Oid1">系统标识：</label>
+                        </th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="Oid1" name="Oid" data-options="required:true,validType:'length[1,50]'"/> 
+                        </td>
+ 
+                        <th>
+                            <label for="Name1">系统名称：</label>
+                        </th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="Name1" name="Name" data-options="required:true,validType:'length[1,50]'"/> 
+                        </td>
+                    </tr>
+                    <tr>
+ 
+                        <th>
+                            <label for="CustomID1">客户编码：</label>
+                        </th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="CustomID1" name="CustomID" /> <!--//data-options="required:true,validType:'length[1,50]'"--> 
+                        </td> 
+                        <th>
+                            <label for="Authorize1">授权编码：</label>
+                        </th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="Authorize1" name="Authorize" /> <!--//data-options="required:true,validType:'length[1,50]'"--> 
+                        </td>
+                    </tr>
+                    <tr>
+ 
+                        <th>
+                            <label for="Note1">备注：</label>
+                        </th>
+                        <td colspan="3">
+                            <input class="easyui-validatebox" type="text" id="Note1" name="Note" /> <!--//data-options="required:true,validType:'length[1,50]'"--> 
+                        </td> 
+                    </tr>
+                    <tr>
+                        <td colspan="4" style="text-align:right; padding-top:10px">
+                            <input type="hidden" id="ID1" name="ID" />
+                            <a href="javascript:void(0)" class="easyui-linkbutton" id="btnEditOK" iconcls="icon-ok" >确定</a>
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#DivEdit').dialog('close')">关闭</a>
+                        </td>
+                    </tr>
+                </table>
+        </form>
+    </div>
+
+    <!--------------------------查看详细信息的弹出层---------------------------->
+    <div id="DivView" class="easyui-dialog" style="width:580px;height:220px;padding:10px 20px"
+			closed="true" resizable="true" modal="true" data-options="iconCls: 'icon-view',buttons: '#dlg-buttons'">
+        <form id="ffView" method="post" novalidate="novalidate">
+                <table id="tblView" class="view">
+                    <tr>
+                        <th>
+                            <label for="Oid2">系统标识：</label>
+                        </th>
+                        <td>
+                            <label id="Oid2" />
+                        </td>
+
+                        <th>
+                            <label for="Name2">系统名称：</label>
+                        </th>
+                        <td>
+                            <label id="Name2" />
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <th>
+                            <label for="CustomID2">客户编码：</label>
+                        </th>
+                        <td>
+                            <label id="CustomID2" />
+                        </td>
+
+                        <th>
+                            <label for="Authorize2">授权编码：</label>
+                        </th>
+                        <td>
+                            <label id="Authorize2" />
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <th>
+                            <label for="Note2">备注：</label>
+                        </th>
+                        <td>
+                            <label id="Note2" />
+                        </td>
+
+                    </tr>
+ 
+                    <tr>
+                        <td colspan="4" style="text-align:right; padding-top:10px">
+                            <input type="hidden" id="ID2" />
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#DivView').dialog('close')">关闭</a>
+                        </td>
+                    </tr>
+                </table>
+        </form>
+    </div>
+</body>
+</html>

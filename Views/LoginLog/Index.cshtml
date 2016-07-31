@@ -1,0 +1,271 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width" />
+    <title>企业信息化平台管理系统</title>
+    @*添加Jquery EasyUI的样式*@
+    <link href="~/Content/JqueryEasyUI/themes/default/easyui.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/JqueryEasyUI/themes/icon.css" rel="stylesheet" type="text/css" />
+
+    <link href="~/Content/themes/Default/style.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/themes/Default/default.css" rel="stylesheet" type="text/css" />
+
+    @*添加Jquery，EasyUI和easyUI的语言包的JS文件*@
+    <script type="text/javascript" src="~/Content/JqueryEasyUI/jquery.min.js"></script>
+    <script type="text/javascript" src="~/Content/JqueryEasyUI/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="~/Content/JqueryEasyUI/locale/easyui-lang-zh_CN.js"></script>
+
+    @*日期格式的引用*@
+    <script src="~/Content/datapattern.js"></script>
+        <script src="~/ViewScript/LoginLog.js"></script>
+
+    <style>
+        table.view {border:1px solid #A8CFEB;border-collapse: collapse;margin-bottom:5px;}
+        .view th{ padding-left:10px;padding-right:5px;padding-top:5px;padding-bottom:5px;height:23px;width: 150px;border: 1px solid silver;background-color:#F1F6FF;}
+        .view td{ padding-left:10px;padding-right:5px;padding-top:5px;padding-bottom:5px;height:23px;width: 150px;border: 1px solid silver;background-color:#FAFCFF;}
+    </style>
+    </head>
+<body>
+    <div id="loading" style="display: none;"><img alt="数据正在加载中..." src="~/Content/images/loading02.gif" /></div>
+    <div class="easyui-layout" id="tb" style="padding:5px;height:auto">
+        <!-------------------------------搜索框----------------------------------->
+        <fieldset>
+            <legend>信息查询</legend>
+            <form id="ffSearch" method="post">
+		        <div style="margin-bottom:5px">
+                    <label for="txtSystemType_ID">系统编号：</label>
+                    <input class="easyui-combobox" type="text" ID="txtSystemType_ID" name="txtSystemType_ID" style="width:100px"  />&nbsp;&nbsp;&nbsp;
+
+                    <label for="txtLoginName">登录名称：</label>
+                    <input type="text" ID="txtLoginName" name="txtLoginName" style="width:100px"  />&nbsp;&nbsp;&nbsp;
+
+                    <label for="txtFullName">真实名称：</label>
+                    <input type="text" ID="txtFullName" name="txtFullName" style="width:100px"  />&nbsp;&nbsp;&nbsp;
+
+                    <label for="txtNote">日志描述：</label>
+                    <input type="text" ID="txtNote" name="txtNote" style="width:100px"  />&nbsp;&nbsp;&nbsp;
+                </div>
+		        <div>
+                    <label for="txtIPAddress"> I P 地 址：</label>
+                    <input type="text" ID="txtIPAddress" name="txtIPAddress" style="width:100px"  />&nbsp;&nbsp;&nbsp;
+
+                    <label for="txtMacAddress">Mac地址：</label>
+                    <input type="text" ID="txtMacAddress" name="txtMacAddress" style="width:100px"  />&nbsp;&nbsp;&nbsp;
+
+                    <label for="txtLastUpdated">开始时间：</label>
+                    <input class="easyui-datebox" type="text" ID="txtLastUpdated" name="txtLastUpdated" style="width:100px"  />&nbsp;&nbsp;&nbsp;
+
+                    <label for="txtLastUpdated2">结束时间：</label>
+                    <input class="easyui-datebox" type="text" ID="txtLastUpdated2" name="txtLastUpdated2" style="width:100px"  />&nbsp;&nbsp;&nbsp;
+
+                    <a href="#" class="easyui-linkbutton" iconcls="icon-search" id="btnSearch">查询</a>
+                </div>
+            </form>
+        </fieldset>
+                
+        <!-------------------------------详细信息展示表格----------------------------------->
+        <table id="grid" style="width: 940px" title="用户操作" iconcls="icon-view" >
+            
+        </table>
+    </div>
+
+    <!--------------------------添加信息的弹出层---------------------------->
+    <div id="DivAdd" class="easyui-dialog" style="width:580px;height:250px;"
+			closed="true" resizable="true" modal="true" data-options="iconCls: 'icon-add',buttons: '#dlg-buttons'">
+        <form id="ffAdd" method="post" novalidate="novalidate">
+                <table id="tblAdd" class="view">
+                    <tr>
+                        <th>
+                            <label for="User_ID">登录用户ID：</label></th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="User_ID" name="User_ID" data-options="required:true" />
+                        </td>
+                        <th>
+                            <label for="LoginName">登录名称：</label></th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="LoginName" name="LoginName" data-options="required:true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <label for="FullName">真实名称：</label></th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="FullName" name="FullName" data-options="required:true" />
+                        </td>
+                        <th>
+                            <label for="Note">日志描述：</label></th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="Note" name="Note" data-options="required:true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <label for="IPAddress">IP地址：</label></th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="IPAddress" name="IPAddress" data-options="required:true" />
+                        </td>
+                        <th>
+                            <label for="MacAddress">Mac地址：</label></th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="MacAddress" name="MacAddress" data-options="required:true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <label for="LastUpdated">更新时间：</label></th>
+                        <td>
+                            <input class="easyui-datebox" type="text" id="LastUpdated" name="LastUpdated" data-options="required:true" />
+                        </td>
+                        <th>
+                            <label for="SystemType_ID">系统编号：</label></th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="SystemType_ID" name="SystemType_ID" data-options="required:true" />
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="4" style="text-align:right; padding-top:10px">
+                            <a href="javascript:void(0)" class="easyui-linkbutton" id="btnAddOK" iconcls="icon-ok" >确定</a>
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#DivAdd').dialog('close')">关闭</a>
+                        </td>
+                    </tr>
+                </table>
+        </form>
+    </div>
+
+    <!--------------------------编辑信息的弹出层---------------------------->
+    <div id="DivEdit" class="easyui-dialog" style="width:580px;height:250px;padding:10px 20px"
+			closed="true" resizable="true" modal="true" data-options="iconCls: 'icon-edit',buttons: '#dlg-buttons'">
+        <form id="ffEdit" method="post" novalidate="novalidate">
+                <table id="tblEdit" class="view">
+                    <tr>
+                        <th>
+                            <label for="User_ID1">登录用户ID：</label></th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="User_ID1" name="User_ID" data-options="required:true,validType:'length[1,50]'" />
+                        </td>
+                        <th>
+                            <label for="LoginName1">登录名称：</label></th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="LoginName1" name="LoginName" data-options="required:true,validType:'length[1,50]'" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <label for="FullName1">真实名称：</label></th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="FullName1" name="FullName" data-options="required:true,validType:'length[1,50]'" />
+                        </td>
+                        <th>
+                            <label for="Note1">日志描述：</label></th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="Note1" name="Note" data-options="required:true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <label for="IPAddress1">IP地址：</label></th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="IPAddress1" name="IPAddress" data-options="required:true" />
+                        </td>
+                        <th>
+                            <label for="MacAddress1">Mac地址：</label></th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="MacAddress1" name="MacAddress" data-options="required:true" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <label for="LastUpdated1">更新时间：</label></th>
+                        <td>
+                            <input  class="easyui-datebox" type="text" id="LastUpdated1" name="LastUpdated" data-options="required:true" />
+                        </td>
+                        <th>
+                            <label for="SystemType_ID1">系统编号：</label></th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="SystemType_ID1" name="SystemType_ID" data-options="required:true" />
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="4" style="text-align:right; padding-top:10px">
+                            <input type="hidden" id="ID1" name="ID" />
+                            <a href="javascript:void(0)" class="easyui-linkbutton" id="btnEditOK" iconcls="icon-ok" >确定</a>
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#DivEdit').dialog('close')">关闭</a>
+                        </td>
+                    </tr>
+                </table>
+        </form>
+    </div>
+
+    <!--------------------------查看详细信息的弹出层---------------------------->
+    <div id="DivView" class="easyui-dialog" style="width:580px;height:250px;padding:10px 20px"
+			closed="true" resizable="true" modal="true" data-options="iconCls: 'icon-view',buttons: '#dlg-buttons'">
+        <form id="ffView" method="post" novalidate="novalidate">
+                <table id="tblView" class="view">
+                    <tr>
+                        <th>
+                            <label for="User_ID2">登录用户ID：</label></th>
+                        <td>
+                            <label id="User_ID2" />
+                        </td>
+                        <th>
+                            <label for="LoginName2">登录名称：</label></th>
+                        <td>
+                            <label id="LoginName2" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <label for="FullName2">真实名称：</label></th>
+                        <td>
+                            <label id="FullName2" />
+                        </td>
+                        <th>
+                            <label for="Note2">日志描述：</label></th>
+                        <td>
+                            <label id="Note2" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <label for="IPAddress2">IP地址：</label></th>
+                        <td>
+                            <label id="IPAddress2" />
+                        </td>
+                        <th>
+                            <label for="MacAddress2">Mac地址：</label></th>
+                        <td>
+                            <label id="MacAddress2" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <label for="LastUpdated2">更新时间：</label></th>
+                        <td>
+                            <label  id="LastUpdated2" />
+                        </td>
+                        <th>
+                            <label for="SystemType_ID2">系统编号：</label></th>
+                        <td>
+                            <label id="SystemType_ID2" />
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="4" style="text-align:right; padding-top:10px">
+                            <input type="hidden" id="ID2" />
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#DivView').dialog('close')">关闭</a>
+                        </td>
+                    </tr>
+                </table>
+        </form>
+    </div>
+</body>
+</html>
+

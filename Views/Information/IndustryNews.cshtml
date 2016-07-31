@@ -1,0 +1,296 @@
+﻿@{
+    ViewBag.Title = "IndustryNews";
+}
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width" />
+    <title>行业动态</title>
+    @*添加Jquery EasyUI的样式*@
+    <link href="~/Content/JqueryEasyUI/themes/default/easyui.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/JqueryEasyUI/themes/icon.css" rel="stylesheet" type="text/css" />
+
+    <link href="~/Content/themes/Default/style.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/themes/Default/default.css" rel="stylesheet" type="text/css" />
+
+    @*添加Jquery，EasyUI和easyUI的语言包的JS文件*@
+    <script type="text/javascript" src="~/Content/JqueryEasyUI/jquery.min.js"></script>
+    <script type="text/javascript" src="~/Content/JqueryEasyUI/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="~/Content/JqueryEasyUI/locale/easyui-lang-zh_CN.js"></script>
+
+    @*日期格式的引用*@
+    <script src="~/Content/datapattern.js"></script>
+
+    @*添加对ckeditor的支持*@
+    <script src="~/Content/JQueryTools/ckeditor/ckeditor.js"></script>
+    <script src="~/Content/JQueryTools/ckeditor/adapters/jquery.js"></script>
+    <script>
+        function initEditor() {
+            $('#Content').ckeditor();
+            $('#Content1').ckeditor();
+        }
+    </script>
+
+    @*添加对uploadify控件的支持*@
+    @*<script type="text/javascript" src="~/Scripts/jquery-2.0.3.min.js"></script>*@
+    <script type="text/javascript" src="~/Content/JQueryTools/uploadify/jquery.uploadify.js"></script>
+    <link href="~/Content/JQueryTools/uploadify/uploadify.css" rel="stylesheet" type="text/css" />
+
+    @*添加对LODOP控件的支持*@
+    <script type="text/javascript" src="~/Content/JQueryTools/LODOP/CheckActivX.js"></script>
+    <object id="LODOP" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA" width=0 height=0> 
+	    <embed id="LODOP_EM" type="application/x-print-lodop" width=0 height=0 pluginspage="install_lodop.exe"></embed>
+    </object> 
+        <script src="~/ViewScript/IndustryNews.js"></script>
+    <style>
+        table.view {border:1px solid #A8CFEB;border-collapse: collapse;margin-bottom:5px;}
+        .view th{ padding-left:10px;padding-right:5px;padding-top:5px;padding-bottom:5px;width: 50px;border: 1px solid silver;background-color:#F1F6FF;}
+        .view td{ padding-left:10px;padding-right:5px;padding-top:5px;padding-bottom:5px;border: 1px solid silver;background-color:#FAFCFF;}
+
+        .toolbar
+        {
+            position: absolute;
+            top: 30px;
+            right: 10px;
+            width: 180px;
+            height: 45px;
+            border: 1px solid #A8CFEB;
+            background-color:#F0F6FF;
+            _margin: 0 16px 0 0;
+        }
+        .toolbar a{display:block;text-align:center;width:50px;float:left;height:40px;text-decoration:none;margin:0 5px;}
+        .toolbar a img{border:none;width:16px;height:16px;margin:5px 10px 4px 10px;}
+    </style>
+    </head>
+<body>
+    <div id="loading" style="display: none;"><img alt="数据正在加载中..." src="~/Content/images/loading02.gif" /></div>
+    <div class="easyui-layout" id="tb" style="padding:5px;height:auto">
+        <!-------------------------------搜索框----------------------------------->
+        <fieldset>
+            <legend>信息查询</legend>
+            <form id="ffSearch" method="post">
+		        <div style="margin-bottom:5px">
+                    <label for="txtTitle">标题：</label>
+                    <input type="text" ID="txtTitle" name="txtTitle" style="width:100px"  />&nbsp;&nbsp;&nbsp;
+                    <label for="txtContent">内容：</label>
+                    <input type="text" ID="txtContent" name="txtContent" style="width:100px"  />&nbsp;&nbsp;&nbsp;
+                    <label for="txtEditor">编辑者：</label>
+                    <input type="text" ID="txtEditor" name="txtEditor" style="width:100px"  />&nbsp;&nbsp;&nbsp;
+                    <label for="txtEditTime">编辑时间：</label>
+                    <input class="easyui-datebox" type="text" ID="txtEditTime" name="txtEditTime" style="width:100px"  />
+                    <label for="txtEditTime2">~</label>
+                    <input class="easyui-datebox" type="text" ID="txtEditTime2" name="txtEditTime2" style="width:100px"  />&nbsp;&nbsp;&nbsp;
+
+                    <a href="#" class="easyui-linkbutton" iconcls="icon-search" id="btnSearch">查询</a>
+                </div>
+            </form>
+        </fieldset>
+                
+        <!-------------------------------详细信息展示表格----------------------------------->
+        <table id="grid" style="width: 940px" title="用户操作" iconcls="icon-view">
+            
+        </table>
+    </div>
+
+    <!--------------------------添加信息的弹出层---------------------------->
+    <div id="DivAdd" class="easyui-dialog" style="width:1024px;height:650px;padding:10px 20px"
+			closed="true" resizable="true" modal="true" data-options="iconCls: 'icon-add',buttons: '#dlg-buttons'">
+        <form id="ffAdd" method="post" novalidate="novalidate">
+                <table id="tblAdd" class="view">
+                    <tr>
+                        <th>
+                            <label for="Title">标题：</label>
+                        </th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="Title" name="Title"  style="Width:689px" MaxLength="100" />
+                            <input type="hidden" value="行业动态" id="Category" name="Category" />
+                        </td>
+                    </tr>   
+                    <tr>
+                        <th>
+                            <label for="Content">内容：</label>
+                        </th>
+                        <td>
+                            <textarea class="easyui-validatebox" id="Content" name="Content" style="width:1024px"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <label for="Attachment_GUID">附件上传：</label>
+                        </th>
+                        <td>                            
+                            <div>
+                                <input class="easyui-validatebox" type="hidden" id="Attachment_GUID" name="Attachment_GUID" />
+                                <input id="file_upload" name="file_upload" type="file" multiple="multiple">
+                                <a href="javascript:void(0)" class="easyui-linkbutton" id="btnUpload" data-options="plain:true,iconCls:'icon-save'"
+                                    onclick="javascript: $('#file_upload').uploadify('upload', '*')">上传</a>
+                                <a href="javascript:void(0)" class="easyui-linkbutton" id="btnCancelUpload" data-options="plain:true,iconCls:'icon-cancel'"
+                                    onclick="javascript: $('#file_upload').uploadify('cancel', '*')">取消</a>
+
+                                <div id="fileQueue" class="fileQueue"></div>
+                                <div id="div_files"></div>
+                                <br />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <label for="TimeOut">过期截止时间：</label>
+                        </th>
+                        <td>
+                            <input class="easyui-datebox" type="text" id="TimeOut" name="TimeOut" /> 
+                        </td>
+                    </tr>
+ 
+                    <tr>
+                        <td colspan="2" style="text-align:right; padding-top:10px">
+                            <a href="javascript:void(0)" class="easyui-linkbutton" id="btnAddOK" iconcls="icon-ok" >确定</a>
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#DivAdd').dialog('close')">关闭</a>
+                        </td>
+                    </tr>
+                </table>
+        </form>
+    </div>
+
+    <!--------------------------编辑信息的弹出层---------------------------->
+    <div id="DivEdit" class="easyui-dialog" style="width:1024px;height:650px;padding:10px 20px"
+			closed="true" resizable="true" modal="true" data-options="iconCls: 'icon-edit',buttons: '#dlg-buttons'">
+        <form id="ffEdit" method="post" novalidate="novalidate">
+                <table id="tblEdit" class="view">
+                    <tr> 
+                        <th>
+                            <label for="Title1">标题：</label>
+                        </th>
+                        <td>
+                            <input class="easyui-validatebox" type="text" id="Title1" name="Title" style="Width:689px" MaxLength="100" data-options="required:true,validType:'length[1,100]'"--> 
+                            <input type="hidden" value="行业动态" id="Category1" name="Category" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <label for="Content1">内容：</label>
+                        </th>
+                        <td>
+                            <textarea class="easyui-validatebox" id="Content1" name="Content"  style="width:1024px"></textarea>
+                        </td>
+                        </tr>
+                    <tr>
+ 
+                        <th>
+                            <label for="Attachment_GUID1">附件上传：</label>
+                        </th>
+                        <td>
+                            <div>
+                                <input class="easyui-validatebox" type="hidden" id="Attachment_GUID1" name="Attachment_GUID" />
+                                <input id="file_uploadEdit" name="file_uploadEdit" type="file" multiple="multiple">
+                                <a href="javascript:void(0)" class="easyui-linkbutton" id="btnUploadEdit" data-options="plain:true,iconCls:'icon-save'"
+                                    onclick="javascript: $('#file_uploadEdit').uploadify('upload', '*')">上传</a>
+                                <a href="javascript:void(0)" class="easyui-linkbutton" id="btnCancelUploadEdit" data-options="plain:true,iconCls:'icon-cancel'"
+                                    onclick="javascript: $('#file_uploadEdit').uploadify('cancel', '*')">取消</a>
+
+                                <div id="fileQueueEdit" class="fileQueue"></div>
+                                <div id="div_filesEdit"></div>
+                                <br />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <label for="TimeOut1">过期截止时间：</label>
+                        </th>
+                        <td>
+                            <input class="easyui-datebox" type="text" id="TimeOut1" name="TimeOut" />
+                        </td>
+                    </tr>
+                    <tr>
+ 
+                    </tr>
+ 
+                    <tr>
+                        <td colspan="4" style="text-align:right; padding-top:10px">
+                            <input type="hidden" id="ID1" name="ID" />
+                            <a href="javascript:void(0)" class="easyui-linkbutton" id="btnEditOK" iconcls="icon-ok" >确定</a>
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#DivEdit').dialog('close')">关闭</a>
+                        </td>
+                    </tr>
+                </table>
+        </form>
+    </div>
+
+    <!--------------------------查看详细信息的弹出层---------------------------->
+    <div id="DivView" class="easyui-dialog" style="width:980px;height:700px;padding:10px 20px"
+			closed="true" resizable="true" modal="true" data-options="iconCls: 'icon-view',buttons: '#dlg-buttons'">
+        <form id="ffView" method="post" novalidate="novalidate">
+            <div class="toolbar">
+                <a href="#" onclick="javascript:Preview();"><img alt="打印预览" src="~/Content/images/print.gif" /><br />打印预览</a>
+                <a href="#" onclick="javascript:PrintA();"><img alt="直接打印" src="~/Content/images/print.gif" /><br />直接打印</a>
+                <a href="#" onclick="javascript:SaveAs();"><img alt="另存为" src="~/Content/images/saveas.gif" /><br />另存为</a>         
+            </div>
+            <div id="printContent">
+                <table border="0" cellspacing="0" cellpadding="0" width="95%" height="40" align="center">
+                    <tbody>
+                        <tr>
+                            <td height="20" colspan="4" align="middle" valign="center">&nbsp; </td>
+                        </tr>
+                        <tr>
+                            <td align="center" colspan="4">
+                                <h3>
+                                    <label id="Title2" ></label>
+                                    <input type="hidden" value="行业动态" id="Category2" name="Category" />
+                                </h3>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td height="35" colspan="4" align="right" valign="center">                               
+                                发布者：<label id="Editor2" ></label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                发布时间：<label id="EditTime2" ></label>&nbsp;
+                                <input type="hidden" id="ID2" />
+                            </td>
+                        </tr>
+                        <tr bgcolor="#cfcdbe">
+                            <td height="1"></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr bgcolor="#f2efea">
+                            <td height="4"></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td height="4"></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="t4" border="0" cellspacing="0" cellpadding="0" width="95%" height="28" align="center">
+                    <tbody>
+                        <tr>
+                            <td width="20px">&nbsp;
+                            </td>
+                            <td width="100%">
+                                <table cellspacing="0" cellpadding="0" width="95%">
+                                    <tr>
+                                        <td valign="top" align="left">
+                                            <lable id="Content2" contenteditable="false"></lable>
+                                            <br /><br />
+                                            <hr />
+                                            <div id="divViewAttach" ></div>
+                                            <br /><br />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
